@@ -18,25 +18,25 @@ class = class';
 inputData = [class meas];
 
 %definition of classes of iris plant types
-a=[+1 -1 -1];
-b=[-1 +1 -1];
-c=[-1 -1 +1];
+a=[1 0 0];
+b=[0 1 0];
+c=[0 0 1];
 
 avgTest = 0;
 
 %% cross-validation: KFold (k = 10) manual
 j = 10;
 % size kx = 15x5
-k1 = [inputData(1:3,:); inputData(33:44,:)];
-k2 = [inputData(4:6,:); inputData(45:46,:)];
-k3 = [inputData(7:9,:); inputData(57:68,:)];
-k4 = [inputData(10:12,:); inputData(69:80,:)];    
-k5 = [inputData(13:15,:); inputData(87:92,:)];
-k6 = [inputData(16:18,:); inputData(93:104,:)];
-k7 = [inputData(19:21,:); inputData(105:116,:)];
-k8 = [inputData(22:24,:); inputData(117:128,:)];
-k9 = [inputData(25:28,:); inputData(129:139,:)];
-k10 = [inputData(29:32,:); inputData(140:150,:)];
+k1 = [inputData(1:5,:); inputData(56:65,:)];
+k2 = [inputData(6:10,:); inputData(66:75,:)];
+k3 = [inputData(11:15,:); inputData(76:85,:)];
+k4 = [inputData(16:20,:); inputData(86:95,:)];    
+k5 = [inputData(21:25,:); inputData(96:105,:)];
+k6 = [inputData(26:30,:); inputData(106:115,:)];
+k7 = [inputData(31:35,:); inputData(116:125,:)];
+k8 = [inputData(36:40,:); inputData(126:135,:)];
+k9 = [inputData(41:45,:); inputData(136:145,:)];
+k10 = [inputData(46:55,:);inputData(146:150,:)];
 
 %above folds exchange
 for i=1:j
@@ -109,7 +109,7 @@ for i=1:j
        target = trainMatrix(:,1);
        
        %normalization of data-input
-       inputTrain = mapminmax(inputTrain);
+       %inputTrain = mapminmax(inputTrain);
        
        %normalization of target
        outputTrain = zeros(size(target,1),3);
@@ -131,9 +131,9 @@ for i=1:j
        outputTrain = outputTrain'; %(3x135)
        
        %% make network
-       n_hidden_nodes = 65;
+       n_hidden_nodes = 4;
        net = feedforwardnet(n_hidden_nodes);
-
+       
        net.trainParam.epochs = 1000; 
        net.trainParam.max_fail = 500;
 
@@ -143,19 +143,19 @@ for i=1:j
        net.divideParam.valRatio = 0;
        net.divideParam.testRatio = 0;
 
-       net.layers{1}.transferFcn='logsig';
-       net.layers{2}.transferFcn='tansig';
+       net.layers{1}.transferFcn='tansig';
+       net.layers{2}.transferFcn='purelin';
 
        %% train network
        
-       [net,xTest, yTest] = train(net,inputTrain,outputTrain);
+       [net, xTest, yTest] = train(net,inputTrain,outputTrain);
 
        %% test network performance
        inputTest = testMatrix(:,2:5); %(15x4)
        targetTest = testMatrix(:,1);
        
        % normalization of data-test
-       inputTest = mapminmax(inputTest);
+       %inputTest = mapminmax(inputTest);
        outputTest = zeros(size(targetTest,1),3);
 
        for j=1:size(targetTest,1)
@@ -178,6 +178,8 @@ for i=1:j
        result = sim(net,inputTest);
        [per con] = confusion(outputTest,result);
        perTest = 100 * (1 - per);
+       
+       fprintf('Fold = %d [Accuracy = %2.2f%%] \n',i, perTest);
        
        avgTest = avgTest + perTest;
        
