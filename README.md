@@ -13,7 +13,7 @@ Iris flower classification with MLP using MATLAB.
 * Versicolor = [0 1 0]
 * Virginica = [0 0 1]
 
-#### Set network: 
+#### Network settings: 
 ```
 Train = 70%, Validation = 15% and Testing = 15%
 Number hidden of nodes = 4 
